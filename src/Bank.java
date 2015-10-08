@@ -4,10 +4,10 @@ import java.util.Random;
 import java.util.Scanner;
 
 /**
- * @Author Joseph Edmunds
+ * @author Joseph Edmunds
  * Created: 10/6/2015.
  */
-public class Teller {
+public class Bank {
     public static void main(String[] args){
 
         System.out.printf("Enter the following values with a space between each:\n ");
