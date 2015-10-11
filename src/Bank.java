@@ -8,7 +8,7 @@ import java.util.Scanner;
  * Created: 10/6/2015.
  */
 public class Bank {
-    public static void main(String[] args){
+    public static void main (String[] args){
 
         System.out.printf("Enter the following values with a space between each:\n ");
         System.out.printf("\t*Number of Cashiers\n\t*Mean inter-arrival time\n\t*Variance inter-arrival time\n\t");
@@ -24,12 +24,18 @@ public class Bank {
 
         Random rand = new Random();
         int clock = 0;
-        PriorityQueue<Integer> eventQueue = new PriorityQueue<>();
-        EventItem arrival = new EventItem(clock, uniform(meanService,varService,rand), -1);
+        PriorityQueue<Integer> evQueue = new PriorityQueue<>();
+        Teller tellers[] = new Teller[numCashiers];
 
-        while (clock < timeLimit){
+       /* while (clock < timeLimit){
+
+
+            if (event.type_of_event == -1)
+            {
+
+            }
             break;
-        }
+        } */
 
     }
 
