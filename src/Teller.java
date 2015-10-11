@@ -5,6 +5,8 @@ import java.util.Queue;
  * Created: 10/11/2015.
  */
 public class Teller {
-
     Queue<EventItem> teller;
+    int totalIdleTime;
+
+
 }
