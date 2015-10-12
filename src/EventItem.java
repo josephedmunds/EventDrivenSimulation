@@ -19,6 +19,11 @@ public class EventItem implements Comparable<EventItem>{
 
     @Override
     public int compareTo(EventItem o) {
-        return 0;
+        if (this.time_of_day < o.time_of_day)
+            return -1;
+        else if (this.time_of_day == o.time_of_day)
+            return 0;
+        else
+            return -1;
     }
 }

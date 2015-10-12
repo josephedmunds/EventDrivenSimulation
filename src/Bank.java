@@ -9,20 +9,23 @@ import java.util.Scanner;
  */
 public class Bank {
     public static void main(String[] args) {
-        System.out.printf("Enter the following values with a space between each:\n ");
-        System.out.printf("\t*Number of Cashiers\n\t*Mean inter-arrival time\n\t*Variance inter-arrival time\n\t");
-        System.out.printf("*Mean customer service time\n\t*Variance customer service time\n\t*Time Limit\n");
-
         Scanner scanMan = new Scanner(System.in);
+        System.out.printf("Enter the number of cashiers: ");
         int numCashiers = scanMan.nextInt();
+        System.out.printf("Enter the mean inter-arrival time: ");
         int meanIntArrival = scanMan.nextInt();
+        System.out.printf("Enter the inter-arrival time variance: ");
         int varIntArrival = scanMan.nextInt();
+        System.out.printf("Enter the mean service time time: ");
         int meanService = scanMan.nextInt();
+        System.out.printf("Enter the service time variance: ");
         int varService = scanMan.nextInt();
+        System.out.printf("Enter the time limit: ");
         int timeLimit = scanMan.nextInt();
 
         Simulator simulate = new Simulator(numCashiers, meanIntArrival, varIntArrival, meanService, varService);
 
+        simulate.setClock(0);
         while (simulate.getClock() < timeLimit)
             simulate.process();
     }

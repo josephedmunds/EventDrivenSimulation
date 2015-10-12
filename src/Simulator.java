@@ -14,12 +14,12 @@ public class Simulator {
     private int maxQueueLength = 0;
     private int customerCount = 0;
     private int currWaitTime, maxWaitTime = 0, totalWaitTime = 0;
-    private int peopleRemaining;
+    private int peopleRemaining = 0;
     private int totalServiceTime;
     private int interArrivalTime;
     private double avgInterArrivalTime;
     private double avgServiceTime;
-    private double idleTime;
+    private double IdleTime;
     private double avgWaitTime;
     private Random rand;
 
@@ -32,12 +32,24 @@ public class Simulator {
         this.varIntArrival = varIntArrival;
         this.meanService = meanService;
         this.varService = varService;
+        peopleRemaining = 0;
+        totalServiceTime = 0;
+        interArrivalTime = 0;
+        avgInterArrivalTime = 0;
+        avgServiceTime = 0;
+        IdleTime = 0;
+        avgWaitTime = 0;
 
         evQueue = new PriorityQueue<>();
         tellers = new Teller[numCashiers];
+        for (int i = 0; i < numCashiers; i++) {
+            tellers[i] = new Teller();
+        }
         this.rand = new Random();
         EventItem event = new EventItem(uniform(meanIntArrival, varIntArrival, rand), uniform(meanService, varService, rand), -1);
+        EventItem stats = new EventItem(500, 0, -2);
         evQueue.add(event);
+        evQueue.add(stats);
     }
 
 
@@ -52,9 +64,9 @@ public class Simulator {
     public void process() {
         EventItem temp;
 
-        temp = evQueue.remove();
+        temp = evQueue.poll();
         for (int i = 0; i < numCashiers; i++) {
-            if (tellers[i].teller.peek() == null)
+            if (tellers[i].teller.size() == 0)
                 tellers[i].totalIdleTime += temp.time_of_day - clock;
         }
         clock = temp.time_of_day;
@@ -74,6 +86,7 @@ public class Simulator {
             }
 
             EventItem arrival = new EventItem(uniform(meanIntArrival, varIntArrival, rand), uniform(meanService, varService, rand), -1);
+            evQueue.add(arrival);
             interArrivalTime += temp.time_of_day - clock;
             totalServiceTime += temp.service_time;
             for (int k = 0; k < numCashiers; k++) {
@@ -93,7 +106,22 @@ public class Simulator {
                 evQueue.add(departure);
             }
         } else {
-            //will have output stats
+            System.out.printf("Number of Customers Served: %d\n", customerCount);
+            System.out.printf("Average Inter-Arrival Time: %.2f\n", avgInterArrivalTime);
+            System.out.printf("Average Service Time: %.2f\n", avgServiceTime);
+            System.out.printf("Average Wait Time: %.2f\n", avgWaitTime);
+            //for (int i = 0; i < numCashiers; i++) {
+            //    System.out.printf("Percent Idle Time of Cashier " + i + ": %f", );
+            //}
+            for (int i = 0; i < numCashiers; i++) {
+                System.out.printf("Idle Time of Cashier " + i + ": %d\n", tellers[i].totalIdleTime);
+            }
+            System.out.printf("Maximum Customer Wait: %d\n", maxWaitTime);
+            System.out.printf("Maximum Queue Length: %d\n", maxQueueLength);
+            System.out.printf("Total people unserved: %d\n" + peopleRemaining);
+
+            EventItem stats = new EventItem(clock + 500, 0, -2);
+            evQueue.add(stats);
         }
     } //end process
 
