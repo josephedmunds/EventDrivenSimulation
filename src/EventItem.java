@@ -24,6 +24,6 @@ public class EventItem implements Comparable<EventItem>{
         else if (this.time_of_day == o.time_of_day)
             return 0;
         else
-            return -1;
+            return 1;
     }
 }

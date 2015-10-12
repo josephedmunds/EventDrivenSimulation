@@ -34,7 +34,6 @@ public class Simulator {
         this.varService = varService;
         peopleRemaining = 0;
         totalServiceTime = 0;
-        interArrivalTime = 0;
         avgInterArrivalTime = 0;
         avgServiceTime = 0;
         IdleTime = 0;
@@ -50,8 +49,8 @@ public class Simulator {
         EventItem stats = new EventItem(500, 0, -2);
         evQueue.add(event);
         evQueue.add(stats);
+        interArrivalTime = event.time_of_day;
     }
-
 
     public int getClock() {
         return clock;
@@ -64,7 +63,7 @@ public class Simulator {
     public void process() {
         EventItem temp;
 
-        temp = evQueue.poll();
+        temp = evQueue.remove();
         for (int i = 0; i < numCashiers; i++) {
             if (tellers[i].teller.size() == 0)
                 tellers[i].totalIdleTime += temp.time_of_day - clock;
@@ -72,20 +71,15 @@ public class Simulator {
         clock = temp.time_of_day;
 
         if (temp.type_of_event == -1) {
-            int holdQueue = 0;
-            for (int j = 0; j < numCashiers - 1; j++) {
-                if (tellers[j].teller.size() < tellers[j + 1].teller.size()) {
-                    holdQueue = j;
-                }
-            }
-            tellers[holdQueue].teller.add(temp);
+            //System.out.println("Heyo");
+            tellers[shortLine()].teller.add(temp);
 
-            if (tellers[holdQueue].teller.size() == 1) {
-                EventItem departure = new EventItem(clock + temp.service_time, temp.service_time, holdQueue);
+            if (tellers[shortLine()].teller.size() == 1) {
+                EventItem departure = new EventItem(clock + temp.service_time, temp.service_time, shortLine());
                 evQueue.add(departure);
             }
 
-            EventItem arrival = new EventItem(uniform(meanIntArrival, varIntArrival, rand), uniform(meanService, varService, rand), -1);
+            EventItem arrival = new EventItem(clock + uniform(meanIntArrival, varIntArrival, rand), uniform(meanService, varService, rand), -1);
             evQueue.add(arrival);
             interArrivalTime += temp.time_of_day - clock;
             totalServiceTime += temp.service_time;
@@ -94,15 +88,16 @@ public class Simulator {
                     maxQueueLength = tellers[k].teller.size();
             }
         } else if (temp.type_of_event >= 0) {
+            //System.out.println("ayy lmao");
             customerCount++;
             currWaitTime = clock - (temp.time_of_day - temp.service_time);
             if (currWaitTime > maxWaitTime) {
                 maxWaitTime = currWaitTime;
             }
             totalWaitTime += currWaitTime;
-            tellers[temp.type_of_event].teller.poll();
-            if (tellers[temp.type_of_event].teller.isEmpty()) {
-                EventItem departure = new EventItem(clock + tellers[temp.type_of_event].teller.peek().service_time, temp.service_time, temp.type_of_event);
+            tellers[temp.type_of_event].teller.remove();
+            if (!tellers[temp.type_of_event].teller.isEmpty()) {
+                EventItem departure = new EventItem(clock + temp.service_time, temp.service_time, temp.type_of_event);
                 evQueue.add(departure);
             }
         } else {
@@ -118,8 +113,12 @@ public class Simulator {
             }
             System.out.printf("Maximum Customer Wait: %d\n", maxWaitTime);
             System.out.printf("Maximum Queue Length: %d\n", maxQueueLength);
-            System.out.printf("Total people unserved: %d\n" + peopleRemaining);
-
+            if (clock == 2000)
+                for (int j = 0; j < numCashiers; j++) {
+                    peopleRemaining += tellers[j].teller.size();
+                }
+            System.out.printf("Total people unserved: " + peopleRemaining);
+            System.out.println("\n\n");
             EventItem stats = new EventItem(clock + 500, 0, -2);
             evQueue.add(stats);
         }
@@ -137,5 +136,15 @@ public class Simulator {
         int small = mean - variant;
         int range = 2 * variant + 1;
         return small + rand.nextInt(range);
+    }
+
+    public int shortLine() {
+        int holdQueue = 0;
+        for (int j = 0; j < numCashiers - 1; j++) {
+            if (tellers[j].teller.size() < tellers[j + 1].teller.size()) {
+                holdQueue = j;
+            }
+        }
+        return holdQueue;
     }
 }
