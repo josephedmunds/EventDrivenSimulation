@@ -9,7 +9,7 @@ import java.util.Scanner;
  */
 public class Bank {
     public static void main(String[] args) {
-    /*    Scanner scanMan = new Scanner(System.in);
+        Scanner scanMan = new Scanner(System.in);
         System.out.printf("Enter the number of cashiers: ");
         int numCashiers = scanMan.nextInt();
         System.out.printf("Enter the mean inter-arrival time: ");
@@ -24,10 +24,7 @@ public class Bank {
         int timeLimit = scanMan.nextInt();
 
         Simulator simulate = new Simulator(numCashiers, meanIntArrival, varIntArrival, meanService, varService);
-        */
 
-        Simulator simulate = new Simulator(2,3,2,8,3);
-        int timeLimit = 2000;
 
         simulate.setClock(0);
         while (simulate.getClock() < timeLimit)
